@@ -67,6 +67,8 @@ map.getView().setProperties({constrainResolution: true});
 var container = document.getElementById('popup');
 var content = document.getElementById('popup-content');
 var closer = document.getElementById('popup-closer');
+let mouseInPopup = false;
+let lastFeatureHovered = null;
 var sketch;
 
 function stopMediaInPopup() {
@@ -86,9 +88,16 @@ var overlayPopup = new ol.Overlay({
     element: container,
 	autoPan: true
 });
-map.addOverlay(overlayPopup)
-    
-    
+map.addOverlay(overlayPopup);
+container.addEventListener('mouseenter', function () {
+    mouseInPopup = true;
+});
+container.addEventListener('mouseleave', function () {
+    mouseInPopup = false;
+    if (!lastFeatureHovered) {
+        overlayPopup.setPosition(undefined);
+    }
+});
 var NO_POPUP = 0
 var ALL_FIELDS = 1
 
@@ -308,8 +317,11 @@ function onPointerMove(evt) {
             container.style.display = 'block';
             overlayPopup.setPosition(coord);
         } else {
+           if (!mouseInPopup) {
             container.style.display = 'none';
             closer.blur();
+            lastFeatureHovered = null;
+           }
         }
     }
 };
@@ -326,9 +338,11 @@ function updatePopup() {
         container.style.display = 'block';
 		overlayPopup.setPosition(popupCoord);
     } else {
-        container.style.display = 'none';
-        closer.blur();
-        stopMediaInPopup();
+        if (!mouseInPopup) {
+            container.style.display = 'none';
+            closer.blur();
+            lastFeatureHovered = null;
+        }
     }
 } 
 
