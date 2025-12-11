@@ -1,38 +1,49 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
-        <meta name="mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <link rel="stylesheet" href="./resources/ol.css">
-        <link rel="stylesheet" href="resources/fontawesome-all.min.css">
-        <link href="resources/photon-geocoder-autocomplete.min.css" rel="stylesheet">
-        <link rel="stylesheet" href="./resources/ol-layerswitcher.css">
-        <link rel="stylesheet" href="./resources/qgis2web.css">
-        <style>
-        html, body {
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="stylesheet" href="./resources/ol.css">
+    <link rel="stylesheet" href="resources/fontawesome-all.min.css">
+    <link href="resources/photon-geocoder-autocomplete.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./resources/ol-layerswitcher.css">
+    <link rel="stylesheet" href="./resources/qgis2web.css">
+
+    <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
             background-color: #ffffff;
         }
+
         .ol-control > * {
-            background-color: #f8f8f8!important;
-            color: #444444!important;
+            background-color: #f8f8f8 !important;
+            color: #444444 !important;
             border-radius: 0px;
         }
+
         .ol-attribution a, .gcd-gl-input::placeholder, .search-layer-input-search::placeholder {
-            color: #444444!important;
+            color: #444444 !important;
         }
+
         .search-layer-input-search {
-            background-color: #f8f8f8!important;
+            background-color: #f8f8f8 !important;
         }
-        .ol-control > *:focus, .ol-control >*:hover {
-            background-color: rgba(248, 248, 248, 0.7)!important;
-        } 
+
+        .ol-control > *:focus, .ol-control > *:hover {
+            background-color: rgba(248, 248, 248, 0.7) !important;
+        }
+
         .ol-control {
             background-color: rgba(255,255,255,.4) !important;
             padding: 2px !important;
-        } 
+        }
+
         #intro-screen {
             position: fixed;
             top: 0;
@@ -46,25 +57,24 @@
             justify-content: center;
             transition: opacity 1s ease;
         }
+
         #intro-screen.fade-out {
             opacity: 0;
             pointer-events: none;
         }
-        #intro-box {
-            font-family: verdana;
-            text-align: center;
-            max-width: 400px;
-        }
+
         #logo-cpts {
             max-width: 120px;
             margin-bottom: 20px;
         }
+
         #intro-text {
             font-size: 14px;
             font-family: verdana;
             margin-bottom: 25px;
             color: #444;
         }
+
         #enter-map {
             background-color: #0078FF;
             color: white;
@@ -74,9 +84,11 @@
             border-radius: 6px;
             cursor: pointer;
         }
+
         #enter-map:hover {
             background-color: #0056b3;
         }
+
         #map-header {
             position: absolute;
             top: 0;
@@ -92,16 +104,19 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
             font-family: verdana;
         }
+
         #header-logo {
             height: 40px;
             margin-bottom: 5px;
         }
+
         #header-title {
             flex-grow: 1;
             text-align: center;
             font-size: 18px;
             margin: 0 0 5px 0;
         }
+
         #header-button {
             padding: 6px 12px;
             background-color: #1976d2;
@@ -110,107 +125,127 @@
             border-radius: 4px;
             font-weight: bold;
         }
+
         #header-button:hover {
             background-color: #145ca3;
         }
+
+        #intro-box {
+            position: relative;
+            z-index: 2;
+            font-family: verdana;
+            text-align: center;
+            max-width: 400px;
+        }
+
         #home-animation {
-            position: fixed;
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            height: 100%;
+            height: 100vh;
             pointer-events: none;
-            z-index: 1500;
+            z-index: 10000;
         }
+
         .fruit-veg {
             position: absolute;
             top: -50px;
-            font-size: 24px;
-            animation-name: floatDown, sway;
-            animation-timing-function: linear;
-            animation-iteration-count: infinite;
+            pointer-events: none;
         }
+
         @keyframes floatDown {
             0% { transform: translateY(-50px); }
             100% { transform: translateY(110vh); }
         }
-        @keyframes sway { 
+
+        @keyframes sway {
             0%, 100% { transform: translateX(0); }
             50% { transform: translateX(20px); }
         }
-        </style>
+    </style>
 
-        <style>
-        html, body, #map {
-            width: 100%;
-            height: 100%;
-            padding: 0;
-            margin: 0;
-        }
-        </style>
-        <title></title>
-    </head>
-    <body>
-        <div id="home-animation"></div>
-        <div id="map-header">
-            <img src="images/logocpts.png" id="header-logo" alt="Logo CPTS">
-            <h1 id="header-title">Les restaurants proches de vous</h1>
-            <a href="https://cptsbagneux.fr/" target="_blank" id="header-button">Visiter le site de la CPTS</a>
-            </div>
-        <div id="intro-screen">
-            <div id="intro-box">
-                <img src="images/logocpts.png" id="logo-cpts">
-                <h1>Il est l'heure de la pause déjeuner !</h1>
-                <p id="intro-text">
-                    <strong>Vous ne savez pas où manger dans le temps dédié à la pause du repas ?</strong><br>
-                    Pas de panique ! La CPTS de Bagneux met à votre disposition cette carte interactive des restaurant et commerces à proximité de vous.<br>
-                    Il vous suffit de taper sur chaque point pour voir les détails (type de cuisine, distance...)<br>
-                    Plus le point est foncé, plus le restaurant est proche.
-                    <p><h2>Bon appétit !</h2></p>
-                <button id="enter-map">Accéder à la carte</button>
-                </div>
-            </div>
-        <div id="map">
-            <div id="popup" class="ol-popup">
-                <a href="#" id="popup-closer" class="ol-popup-closer"></a>
-                <div id="popup-content"></div>
-            </div>
+    <title>Carte des restaurants</title>
+</head>
+<body>
+    <div id="home-animation"></div>
+
+    <div id="map-header">
+        <img src="images/logocpts.png" id="header-logo" alt="Logo CPTS">
+        <h1 id="header-title">Les restaurants proches de vous</h1>
+        <a href="https://cptsbagneux.fr/" target="_blank" id="header-button">Visiter le site de la CPTS</a>
+    </div>
+
+    <div id="intro-screen">
+        <div id="intro-box">
+            <img src="images/logocpts.png" id="logo-cpts" alt="Logo CPTS">
+            <h1>Il est l'heure de la pause déjeuner !</h1>
+            <p id="intro-text">
+                <strong>Vous ne savez pas où manger dans le temps dédié à la pause du repas ?</strong><br>
+                Pas de panique ! La CPTS de Bagneux met à votre disposition cette carte interactive des restaurants et commerces à proximité de vous.<br>
+                Il vous suffit de taper sur chaque point pour voir les détails (type de cuisine, distance...).<br>
+                Plus le point est foncé, plus le restaurant est proche.
+            </p>
+            <h2>Bon appétit !</h2>
+            <button id="enter-map">Accéder à la carte</button>
         </div>
-        <script src="resources/qgis2web_expressions.js"></script>
-<script src="resources/proj4.js"></script>
-        <script>proj4.defs('IGNF:RGF93LAMB93.IGN69','+proj=lcc +lat_0=46.5 +lon_0=3 +lat_1=44 +lat_2=49 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +vunits=m +no_defs');</script>
-        <script src="./resources/functions.js"></script>
-        <script src="./resources/ol.js"></script>
-        <script src="./resources/ol-layerswitcher.js"></script>
-        <script src="resources/photon-geocoder-autocomplete.min.js"></script>
-        <script src="layers/CommunedeBagneux_1.js"></script><script src="layers/RESTAURANTSFORMATIONPSSMlocformation_2.js"></script><script src="layers/Restaurantsprochesdevous_3.js"></script>
-        <script src="styles/CommunedeBagneux_1_style.js"></script><script src="styles/RESTAURANTSFORMATIONPSSMlocformation_2_style.js"></script><script src="styles/Restaurantsprochesdevous_3_style.js"></script>
-        <script src="./layers/layers.js" type="text/javascript"></script> 
-        <script src="./resources/Autolinker.min.js"></script>
-        <script src="./resources/qgis2web.js"></script>
-        <script>
-        document.getElementById("enter-map").onclick = function () {
-            var intro = document.getElementById("intro-screen");
-            intro.classList.add("fade-out");
-            setTimeout(function() {
-                intro.style.display = "none";
-            }, 1000);
-        };
-        </script>
-        <script>
+    </div>
+
+    <div id="map">
+        <div id="popup" class="ol-popup">
+            <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+            <div id="popup-content"></div>
+        </div>
+    </div>
+
+    <script src="resources/qgis2web_expressions.js"></script>
+    <script src="resources/proj4.js"></script>
+    <script>
+        proj4.defs('IGNF:RGF93LAMB93.IGN69','+proj=lcc +lat_0=46.5 +lon_0=3 +lat_1=44 +lat_2=49 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +vunits=m +no_defs');
+    </script>
+    <script src="./resources/functions.js"></script>
+    <script src="./resources/ol.js"></script>
+    <script src="./resources/ol-layerswitcher.js"></script>
+    <script src="resources/photon-geocoder-autocomplete.min.js"></script>
+    <script src="layers/CommunedeBagneux_1.js"></script>
+    <script src="layers/RESTAURANTSFORMATIONPSSMlocformation_2.js"></script>
+    <script src="layers/Restaurantsprochesdevous_3.js"></script>
+    <script src="styles/CommunedeBagneux_1_style.js"></script>
+    <script src="styles/RESTAURANTSFORMATIONPSSMlocformation_2_style.js"></script>
+    <script src="styles/Restaurantsprochesdevous_3_style.js"></script>
+    <script src="./layers/layers.js"></script>
+    <script src="./resources/Autolinker.min.js"></script>
+    <script src="./resources/qgis2web.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const enterButton = document.getElementById("enter-map");
+            const intro = document.getElementById("intro-screen");
             const homeAnimation = document.getElementById('home-animation');
-            const fruitVeggies = ["🍏", "🌶️","🥐","🍇","🍕","🍐","🍳","🍜"];
-            for (let i = 0; i < 30; i ++) {
-                let fv = document.createElement("div");
-                fv.className = "fruit-veg";
-                fv.textContent = fruitsVeggies[Math.floor(Math.random() * fruitsVeggies.length)];
-                fv.style.left = Math.random() * 100 + "vw";
-                fv.style.fontSize = (Math.random() * 24 + 16) + "px";
-                fv.style.AnimationDuration = (Math.random() * 5 + 5) + "s, " + (Math.random() * 3 + 2) + "s";
-                fv.style.animationDelay = Math.random() * 5 + "s";
-                fv.style.transform = `rotate(${Math.random()*360}deg)`;
-                homeAnimation.appendChild(fv);
-            }
-            </script> 
-    </body>
+            const fruitsVeggies = ["🍏", "🌶️", "🥐", "🍇", "🍕", "🍐", "🍳", "🍜"];
+
+            enterButton.addEventListener("click", function() {
+                intro.classList.add("fade-out");
+
+                setTimeout(function() {
+                    intro.style.display = "none";
+
+                    for (let i = 0; i < 30; i++) {
+                        let fv = document.createElement("div");
+                        fv.className = "fruit-veg";
+                        fv.textContent = fruitsVeggies[Math.floor(Math.random() * fruitsVeggies.length)];
+                        fv.style.left = Math.random() * 100 + "vw";
+                        fv.style.fontSize = (Math.random() * 24 + 16) + "px";
+                        fv.style.animation = 
+                            `${Math.random() * 5 + 5}s floatDown linear infinite, ` +
+                            `${Math.random() * 3 + 2}s sway ease-in-out infinite`;
+                        fv.style.animationDelay = Math.random() * 5 + "s";
+                        fv.style.transform = `rotate(${Math.random() * 360}deg)`;
+                        homeAnimation.appendChild(fv);
+                    }
+                }, 1000);
+            });
+        });
+    </script>
+</body>
 </html>
