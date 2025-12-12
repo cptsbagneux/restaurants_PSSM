@@ -479,6 +479,23 @@ function onSingleClickWMS(evt) {
 
 map.on('singleclick', onSingleClickFeatures);
 map.on('singleclick', onSingleClickWMS);
+map.on('click', handleFeatureClick);
+
+//version mobile
+var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+if (isMobile) {
+    map.getTargetElement().addEventListener('touchend', function(e) {
+        e.preventDefault();
+        var pixel = map.getEventPixel(e);
+        var coordinate = map.getCoordinateFromPixel(pixel);
+        onSingleClickFeatures({
+            pixel: pixel,
+            coordinate: coordinate,
+            originalEvent: e
+        });
+    });
+}
+
 
 //get container
 var topLeftContainerDiv = document.getElementById('top-left-container')
