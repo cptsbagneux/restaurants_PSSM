@@ -332,6 +332,11 @@ var popupContent = '';
 var popupCoord = null;
 var featuresPopupActive = false;
 
+map.on('singleclick', function(evt) {
+    if (!('ontouchstart' in window)) return;
+    onPointerMove(evt);
+});
+
 function updatePopup() {
     if (popupContent) {
         content.innerHTML = popupContent;
